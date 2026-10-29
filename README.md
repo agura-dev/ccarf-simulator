@@ -92,3 +92,4 @@ Text supports inline `` `code` `` only.
 ## Reference
 
 The authoritative source for the exam's content and format is Anthropic's official CCAR-F exam guide.
+https://everpath-course-content.s3-accelerate.amazonaws.com/instructor%2F6nizmqk8tpzpfjvt6qmmav7rh%2Fpublic%2F1783542750%2FClaude+Certified+Architect+%E2%80%93+Foundations+Exam+Guide.pdf
