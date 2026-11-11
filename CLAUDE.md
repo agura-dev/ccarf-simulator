@@ -5,14 +5,15 @@ Simulador del examen CCAR-F (Claude Certified Architect – Foundations). La esp
 ## Estructura
 
 - `index.html` — la aplicación completa: HTML + CSS + JS + datos en un solo archivo. Se abre directamente en el navegador (`file://`), sin servidor ni build.
-- `data/questions.json` — **fuente de verdad** de escenarios, banco (151 preguntas) y preguntas de ejemplo (12). Se edita a mano.
-- `tools/embed_data.py` — valida `data/questions.json` y lo embebe en `index.html`.
+- `data/questions.json` — **fuente de verdad** de escenarios, banco (211 preguntas) y preguntas de ejemplo (12). Se edita a mano.
+- `data/questions_heavy.json` — `{ bank }` con las mismas 211 preguntas y en el mismo orden que el banco estándar: las 151 `Practice Exam` + `Practice Test` reescritas en estilo "pesado" (más contexto, distractores plausibles, opciones de largo parejo) y las 60 `Purcell Practice Set` copiadas sin cambios (ya tienen ese estilo). Mismos `id`/`d`/`ts`/`sc`/`a`/`src` y mismo formato que el banco; en las reescritas solo cambian `q`, `o` y `w`. Si se edita una pregunta Purcell, actualizarla en los dos archivos. La app lo usa cuando se elige "Heavy" en el inicio. Reglas de estilo en `Preliminaries/heavy_style_guide.md` (local).
+- `tools/embed_data.py` — valida `data/questions.json` y `data/questions_heavy.json` y los embebe en `index.html`.
 - `README.md` — instrucciones de uso para quienes clonan el repo (en inglés).
 
 Solo en local (en `.gitignore`, no están en el repo):
 - `context/project_overview.md` — especificación y decisiones (fuente de verdad).
 - `data/CCAR_F_exam_guide_official.pdf` — guía oficial (pesos por dominio en sección 4, objetivos en sección 6, puntaje en sección 10).
-- `Preliminaries/` — prompts, borradores y los `.md` históricos de los que salió `questions.json`: `CCAR-F_Practice_Exam_QuestionsDB.md` (banco en tabla), `CCARF_ExamGuide_SampleQuestions_DB.md` (ejemplos de la guía), `Practice_Test_Questions.md` (origen de las preguntas `Practice Test`), `Scenarios.md`. La app no los usa.
+- `Preliminaries/` — prompts, borradores y los `.md` históricos de los que salió `questions.json`: `CCAR-F_Practice_Exam_QuestionsDB.md` (banco en tabla), `CCARF_ExamGuide_SampleQuestions_DB.md` (ejemplos de la guía), `Practice_Test_Questions.md` (origen de las preguntas `Practice Test`), `mock exam1.pdf` (origen de las preguntas `Purcell Practice Set`), `Scenarios.md`. La app no los usa.
 - `create_repo.md` — pasos para publicar en GitHub.
 
 ## Restricciones (no negociables)
@@ -24,13 +25,13 @@ Solo en local (en `.gitignore`, no están en el repo):
 
 ## Datos embebidos
 
-`data/questions.json` se embebe minificado en `<script type="application/json" id="ccarf-data">` dentro de `index.html` (con `file://` no se puede hacer fetch). Tras editar el JSON, correr desde la raíz:
+`data/questions.json` se embebe minificado en `<script type="application/json" id="ccarf-data">` y el banco de `data/questions_heavy.json` en `<script type="application/json" id="ccarf-data-heavy">` (solo `{ bank }`; escenarios y preguntas de ejemplo son comunes), dentro de `index.html` (con `file://` no se puede hacer fetch). Tras editar cualquiera de los dos JSON, correr desde la raíz:
 
 ```
 python3 tools/embed_data.py
 ```
 
-El script valida (IDs únicos por grupo, `d`/`ts`/`sc`/`o`/`a`/`w` bien formados, cupo por dominio para el examen Completo), escapa `</` como `<\/` y reemplaza el bloque. Si hay errores no toca `index.html`. Nunca editar el bloque a mano.
+El script valida (IDs únicos por grupo, `d`/`ts`/`sc`/`o`/`a`/`w` bien formados, cupo por dominio para el examen Completo), escapa `</` como `<\/` y reemplaza los dos bloques. Al banco pesado le aplica la misma validación y además exige que coincida con el estándar: mismos IDs en el mismo orden y mismos `d`/`ts`/`sc`/`a`/`src`. Si hay errores en cualquiera de los dos no toca `index.html`. Si el bloque `ccarf-data-heavy` no existe, lo crea después de `ccarf-data`. Nunca editar los bloques a mano.
 
 Formato:
 
@@ -40,7 +41,7 @@ Formato:
   samples:   [{ id, d, ts, sc, q, o, a, w }] }
 ```
 
-`d` dominio 1–5 · `ts` task statement · `sc` escenario 1–6 · `q` pregunta · `o` 4 opciones en orden original · `a` índice de la correcta (0–3) · `w` explicación única ("Why X": por qué es correcta y, si la fuente lo trae, por qué las otras no) · `src` origen (`Practice Exam` | `Practice Test`; la app aún no lo usa). Los IDs de `bank` y `samples` se numeran por separado y pueden coincidir. El texto admite solo `` `código` `` (se renderiza con `fmt()`, que escapa HTML).
+`d` dominio 1–5 · `ts` task statement · `sc` escenario 1–6 · `q` pregunta · `o` 4 opciones en orden original · `a` índice de la correcta (0–3) · `w` explicación única ("Why X": por qué es correcta y, si la fuente lo trae, por qué las otras no) · `src` origen (`Practice Exam` | `Practice Test` | `Purcell Practice Set`; la app aún no lo usa). Los IDs de `bank` y `samples` se numeran por separado y pueden coincidir. El texto admite solo `` `código` `` (se renderiza con `fmt()`, que escapa HTML).
 
 ### Mapeo de escenarios
 
@@ -55,7 +56,7 @@ En el JSON `sc` es el número oficial. Las fuentes originales usaban nombres cor
 | 5 | Claude Code for Continuous Integration | CI | Claude Code for Continuous Integration |
 | 6 | Structured Data Extraction | Structured Data Extraction | — |
 
-Las preguntas de ejemplo de la guía ya usan los nombres oficiales.
+Las preguntas de ejemplo de la guía y las del Purcell Practice Set ya usan los nombres y números oficiales.
 
 ## Lógica clave (index.html)
 
@@ -71,6 +72,7 @@ Las preguntas de ejemplo de la guía ya usan los nombres oficiales.
     - Se redondea al entero.
   - El % mostrado usa `Math.floor` para no mostrar "72%" en un no aprobado.
 - **Tiempo**: el reloj usa `endAt` (timestamp), no cuenta ticks. Avisos a 5 min y 1 min; entrega automática en 0. La pregunta de práctica no consume tiempo.
+- **Banco de preguntas** (`state.bank`: `standard` | `heavy`, guardado en localStorage con la clave `ccarf-bank`): selector en el inicio, antes de elegir modo; vale para Test y Knowledge. `BANKS[state.bank]` es lo único que lee `pickByDomain`; la pregunta de práctica usa siempre `DATA.samples`. Cada sesión guarda `bank` en `state.exam` / `state.k` y `bankTag()` añade " · heavy" al modo de Knowledge y a los resultados (con Standard no se muestra nada; la pantalla del examen no cambia).
 - **Estilo del examen** (`state.examStyle`: `real` | `modern`, guardado en localStorage): `showScreen()` pone la clase `exam-real` en `<body>` solo en `test-sample` y `test-exam`; el CSS de `body.exam-real` redefine los tokens (blanco/negro, Arial, sin radios) y esconde topbar, footer, hints y panel de navegación. Los textos de esas pantallas salen del diccionario `UI` vía `tx()`: los dos estilos están en inglés, pero `real` imita la redacción del examen oficial ("End Exam", "Mark for review") y `modern` usa la del simulador ("Finish exam", "⚐ Flag for review"). Los estáticos usan `data-t="<clave>"` + `applyStaticLabels()`. Al añadir texto a la pantalla de examen, agregarlo a los dos estilos en `UI`.
 - **Revisión antes de terminar**: es una vista dentro de `screen-test-exam` (`#exam-review-view`, alterna con `#exam-question-view` vía `showView()`), así comparte barra y reloj. Terminar el examen siempre pasa por ahí (`openReview` → `requestFinish`).
 - **`[hidden]` lleva `display: none !important`** global: sin eso, reglas como `.btn { display: inline-flex }` lo anulan.
@@ -79,7 +81,7 @@ Las preguntas de ejemplo de la guía ya usan los nombres oficiales.
 ## Estado
 
 - Hecho: pantalla de inicio, modo Test completo (selección + estilo real/moderno, pregunta de práctica, examen, revisión antes de terminar, resultados por dominio, revisión con filtros) y modo Knowledge (configuración, pregunta con feedback inmediato y reloj de 2 min por pregunta, resumen por dominio).
-- **Knowledge**: siempre estilo moderno (no usa `tx()`; sus textos están directamente en el código); opciones **sin mezclar** (decisión de producto, por las letras de las explicaciones); estado en `state.k`, reloj propio (`startKTimer`/`kTick`) independiente del del examen. Selección con `pickByDomain(KNOWLEDGE_SIZES[n])`, sin regla de escenarios, en orden aleatorio.
+- **Knowledge**: siempre estilo moderno (no usa `tx()`; sus textos están directamente en el código); opciones **sin mezclar** (decisión de producto, por las letras de las explicaciones); estado en `state.k`, reloj propio (`startKTimer`/`kTick`) independiente del del examen. Selección con `pickByDomain(kDist(n, dominio))`, sin regla de escenarios, en orden aleatorio. Filtro por dominio en la configuración (radios `k-domain`, generados desde `DOMAINS`): `'all'` usa `KNOWLEDGE_SIZES`; un dominio pone las n preguntas en él (`state.k.domain`) y el resumen muestra solo esa fila.
 
 ## Verificación
 

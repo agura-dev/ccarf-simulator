@@ -17,6 +17,11 @@ To get updates, run `git pull` inside the folder, or download the ZIP again.
 
 ## Modes
 
+Before choosing a mode, pick a **question style** on the home screen. It applies to both modes and is remembered between visits:
+
+- **Standard:** concise questions, quicker to read.
+- **Heavy:** the same questions rewritten with longer scenarios and tougher distractors, closer to the real exam.
+
 ### Test
 
 Simulates the real exam.
@@ -40,6 +45,7 @@ Simulates the real exam.
 Practice question by question, with the correct answer and its explanation shown right after you answer.
 
 - 10 or 15 questions.
+- All domains (official weights) or a single domain.
 - Timed (2 minutes per question) or untimed.
 
 ## Keyboard shortcuts
@@ -58,18 +64,18 @@ Each screen lists its own shortcuts at the bottom.
 
 ## Question bank
 
-- 151 questions covering the 5 domains and the 6 official scenarios.
+- 211 questions covering the 5 domains and the 6 official scenarios, in two styles: `data/questions.json` (Standard) and `data/questions_heavy.json` (Heavy). Both files hold the same questions with the same IDs, domains, scenarios and correct answers; only the wording of the question, options and explanation changes.
 - 12 sample questions from the official exam guide, used as the practice question in Test mode.
 
 ### Editing questions
 
-The questions live in `data/questions.json`. The app can't read that file directly when opened from disk, so a copy is embedded inside `index.html`. After editing the JSON, run this from the project root (requires Python 3):
+The questions live in `data/questions.json` and `data/questions_heavy.json`. The app can't read those files directly when opened from disk, so a copy of both is embedded inside `index.html`. After editing either file, run this from the project root (requires Python 3):
 
 ```bash
 python3 tools/embed_data.py
 ```
 
-The script checks the data first. If it finds errors, it lists them and leaves `index.html` unchanged.
+The script checks both files first, including that the Heavy file matches the Standard one question by question. If it finds errors, it lists them and leaves `index.html` unchanged.
 
 Each question in `bank` has these fields:
 
@@ -83,11 +89,15 @@ Each question in `bank` has these fields:
 | `o` | The 4 options, in order A–D |
 | `a` | Index of the correct option (0 = A … 3 = D) |
 | `w` | Explanation ("Why X") |
-| `src` | Source: `Practice Exam` or `Practice Test` |
+| `src` | Source: `Practice Exam`, `Practice Test` or `Purcell Practice Set` |
 
 Questions in `samples` use the same fields, without `src`.
 
 Text supports inline `` `code` `` only.
+
+### Credits
+
+60 questions (`src: "Purcell Practice Set"`) come from the *CCAR-F Practice Question Set* by Matthew Purcell ([linkedin.com/in/purcellmatthew](https://www.linkedin.com/in/purcellmatthew)). Its multiple-response items were adapted to single-answer format.
 
 ## Reference
 
