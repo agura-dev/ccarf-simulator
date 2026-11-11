@@ -2,11 +2,15 @@
 
 A practice simulator for the **Claude Certified Architect – Foundations (CCAR-F)** exam.
 
+**Live version:** https://agura-dev.github.io/ccarf-simulator/
+
 > Unofficial. This project is not affiliated with or endorsed by Anthropic.
 
 ## Getting started
 
-The whole app is a single file, `index.html`. You don't need a server, an internet connection or any installation.
+The easiest way is to open the [live version](https://agura-dev.github.io/ccarf-simulator/) in your browser. Nothing to install.
+
+To use it offline: the whole app is a single file, `index.html`, with no server, internet connection or installation needed.
 
 1. Get the files using either option:
    - Clone the repository: `git clone <repository URL>`.
@@ -92,7 +96,11 @@ Text supports inline `` `code` `` only.
 
 ### Credits
 
-60 questions (`src: "Purcell Practice Set"`) come from the *CCAR-F Practice Question Set* by Matthew Purcell ([linkedin.com/in/purcellmatthew](https://www.linkedin.com/in/purcellmatthew)). Its multiple-response items were adapted to single-answer format.
+- **12 sample questions** (`samples`, used as the practice question in Test mode) come from Section 9 of Anthropic's official CCAR-F exam guide (v1.0, July 2026).
+- **60 questions** (`src: "Purcell Practice Set"`) come from the *CCAR-F Practice Question Set* by Matthew Purcell ([linkedin.com/in/purcellmatthew](https://www.linkedin.com/in/purcellmatthew)). Its multiple-response items were adapted to single-answer format.
+- **151 questions** (`src: "Practice Exam"` and `"Practice Test"`) were rewritten from community practice materials whose author is unknown. If you are the author, please [open an issue](https://github.com/agura-dev/ccarf-simulator/issues) to be credited or to have them removed.
+
+The same credits are shown in the app's footer.
 
 ## Reference
 

@@ -7,7 +7,8 @@ Simulador del examen CCAR-F (Claude Certified Architect – Foundations). La esp
 - `index.html` — la aplicación completa: HTML + CSS + JS + datos en un solo archivo. Se abre directamente en el navegador (`file://`), sin servidor ni build.
 - `data/questions_heavy.json` — **fuente de verdad** de escenarios, banco (211 preguntas) y preguntas de ejemplo (12). Se edita a mano. El banco está en estilo "pesado" (más contexto, distractores plausibles, opciones de largo parejo): las 151 `Practice Exam` + `Practice Test` se reescribieron así y las 60 `Purcell Practice Set` ya venían en ese estilo. Reglas de estilo en `Preliminaries/heavy_style_guide.md` (local); seguirlas al añadir o editar preguntas.
 - `tools/embed_data.py` — valida `data/questions_heavy.json` y lo embebe en `index.html`.
-- `README.md` — instrucciones de uso para quienes clonan el repo (en inglés).
+- `README.md` — instrucciones de uso para quienes clonan el repo (en inglés), con los créditos de las preguntas.
+- `.nojekyll` — vacío. El sitio se publica en GitHub Pages desde `main` / raíz (https://agura-dev.github.io/ccarf-simulator/), sin build; este archivo evita que Pages lo procese con Jekyll.
 
 Solo en local (en `.gitignore`, no están en el repo):
 - `context/project_overview.md` — especificación y decisiones (fuente de verdad).
@@ -74,6 +75,7 @@ Las preguntas de ejemplo de la guía y las del Purcell Practice Set ya usan los 
 - **Banco de preguntas**: un solo banco (`DATA.bank`, el pesado), que es lo único que lee `pickByDomain`; la pregunta de práctica usa `DATA.samples`. No hay selector: el de Standard/Heavy se retiró y al cargar se borra su clave antigua de localStorage (`ccarf-bank`).
 - **Estilo del examen** (`state.examStyle`: `real` | `modern`, guardado en localStorage): `showScreen()` pone la clase `exam-real` en `<body>` solo en `test-sample` y `test-exam`; el CSS de `body.exam-real` redefine los tokens (blanco/negro, Arial, sin radios) y esconde topbar, footer, hints y panel de navegación. Los textos de esas pantallas salen del diccionario `UI` vía `tx()`: los dos estilos están en inglés, pero `real` imita la redacción del examen oficial ("End Exam", "Mark for review") y `modern` usa la del simulador ("Finish exam", "⚐ Flag for review"). Los estáticos usan `data-t="<clave>"` + `applyStaticLabels()`. Al añadir texto a la pantalla de examen, agregarlo a los dos estilos en `UI`.
 - **Revisión antes de terminar**: es una vista dentro de `screen-test-exam` (`#exam-review-view`, alterna con `#exam-question-view` vía `showView()`), así comparte barra y reloj. Terminar el examen siempre pasa por ahí (`openReview` → `requestFinish`).
+- **Créditos**: van en el `<footer>` (dos líneas, con enlaces al repo, a Matthew Purcell y a Issues) y en la sección Credits del README, con los conteos por fuente escritos a mano. Si se añade o quita una fuente (`src`) o cambian los conteos, actualizar los dos. El footer se oculta en el estilo "real" del examen.
 - **`[hidden]` lleva `display: none !important`** global: sin eso, reglas como `.btn { display: inline-flex }` lo anulan.
 - **Pantallas**: secciones `.screen` con id `screen-<nombre>`; navegación con `showScreen()` o atributos `data-nav="<nombre>"`. Atajos de teclado centralizados en un único `keydown` por pantalla.
 

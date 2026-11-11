@@ -660,6 +660,9 @@
     color: var(--text-muted);
     text-align: center;
   }
+  footer p { margin: 0 auto; max-width: 900px; text-wrap: balance; }
+  footer p + p { margin-top: 6px; }
+  footer a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
 
   /* ===== Selector de estilo del examen ===== */
   .style-pick {
@@ -1227,8 +1230,16 @@
 
 <div class="toast" id="toast" role="alert" hidden></div>
 
+<!-- Créditos de las preguntas: actualizarlos si se añade una fuente nueva (campo src del banco). -->
 <footer>
-  Unofficial practice simulator · based on the CCAR-F exam guide (July 2026)
+  <p>Unofficial practice simulator · not affiliated with or endorsed by Anthropic · based on the CCAR&#8209;F exam guide (July 2026) ·
+    <a href="https://github.com/agura-dev/ccarf-simulator" target="_blank" rel="noopener">Source on GitHub</a></p>
+  <p>Questions: 12 samples from Anthropic's official exam guide ·
+    60 adapted from the CCAR&#8209;F Practice Question Set by
+    <a href="https://www.linkedin.com/in/purcellmatthew" target="_blank" rel="noopener">Matthew Purcell</a> ·
+    151 rewritten from community practice materials, author unknown. Are you the author?
+    <a href="https://github.com/agura-dev/ccarf-simulator/issues" target="_blank" rel="noopener">Open an issue</a>
+    to be credited or have them removed.</p>
 </footer>
 
 <!-- Banco de preguntas, preguntas de ejemplo y escenarios. Generado desde data/questions_heavy.json con tools/embed_data.py; no editar a mano. -->
