@@ -1,53 +1,53 @@
 # CLAUDE.md
 
-Simulador del examen CCAR-F (Claude Certified Architect – Foundations). La especificación completa y las decisiones de producto están en [context/project_overview.md](context/project_overview.md) (solo en local, no está en el repo): léela antes de cambiar comportamiento.
+Practice simulator for the CCAR-F exam (Claude Certified Architect – Foundations). The full specification and product decisions are in [context/project_overview.md](context/project_overview.md) (local only, not in the repo): read it before changing behavior.
 
-## Estructura
+## Structure
 
-- `index.html` — la aplicación completa: HTML + CSS + JS + datos en un solo archivo. Se abre directamente en el navegador (`file://`), sin servidor ni build.
-- `data/questions_heavy.json` — **fuente de verdad** de escenarios, banco (211 preguntas) y preguntas de ejemplo (12). Se edita a mano. El banco está en estilo "pesado" (más contexto, distractores plausibles, opciones de largo parejo): las 151 `Practice Exam` + `Practice Test` se reescribieron así y las 60 `Purcell Practice Set` ya venían en ese estilo. Reglas de estilo en `Preliminaries/heavy_style_guide.md` (local); seguirlas al añadir o editar preguntas.
-- `tools/embed_data.py` — valida `data/questions_heavy.json` y lo embebe en `index.html`.
-- `README.md` — instrucciones de uso para quienes clonan el repo (en inglés), con los créditos de las preguntas.
-- `.nojekyll` — vacío. El sitio se publica en GitHub Pages desde `main` / raíz (https://agura-dev.github.io/ccarf-simulator/), sin build; este archivo evita que Pages lo procese con Jekyll.
+- `index.html` — the whole app: HTML + CSS + JS + data in a single file. Opens directly in the browser (`file://`), with no server or build.
+- `data/questions_heavy.json` — **source of truth** for scenarios, the bank (211 questions) and sample questions (12). Edited by hand. The bank uses the "heavy" style (more context, plausible distractors, options of similar length): the 151 `Practice Exam` + `Practice Test` questions were rewritten this way, and the 60 `Purcell Practice Set` questions already came in that style. Style rules are in `Preliminaries/heavy_style_guide.md` (local); follow them when adding or editing questions.
+- `tools/embed_data.py` — validates `data/questions_heavy.json` and embeds it in `index.html`.
+- `README.md` — usage instructions for people who clone the repo, with the question credits.
+- `.nojekyll` — empty. The site is published on GitHub Pages from `main` / root (https://agura-dev.github.io/ccarf-simulator/), with no build; this file stops Pages from processing it with Jekyll.
 
-Solo en local (en `.gitignore`, no están en el repo):
-- `context/project_overview.md` — especificación y decisiones (fuente de verdad).
-- `data/CCAR_F_exam_guide_official.pdf` — guía oficial (pesos por dominio en sección 4, objetivos en sección 6, puntaje en sección 10).
-- `Preliminaries/` — prompts, borradores y los `.md` históricos de los que salió el banco: `questions.json` (banco estándar archivado: versión concisa de las mismas 211 preguntas, mismos IDs y respuestas; la app ya no lo usa), `CCAR-F_Practice_Exam_QuestionsDB.md` (banco en tabla), `CCARF_ExamGuide_SampleQuestions_DB.md` (ejemplos de la guía), `Practice_Test_Questions.md` (origen de las preguntas `Practice Test`), `mock exam1.pdf` (origen de las preguntas `Purcell Practice Set`), `Scenarios.md`. La app no los usa.
-- `create_repo.md` — pasos para publicar en GitHub.
+Local only (in `.gitignore`, not in the repo):
+- `context/project_overview.md` — specification and decisions (source of truth).
+- `data/CCAR_F_exam_guide_official.pdf` — official exam guide (domain weights in section 4, objectives in section 6, scoring in section 10).
+- `Preliminaries/` — prompts, drafts and the historical files the bank came from: `questions.json` (archived standard bank: a concise version of the same 211 questions, same IDs and answers; the app no longer uses it), `CCAR-F_Practice_Exam_QuestionsDB.md` (bank as a table), `CCARF_ExamGuide_SampleQuestions_DB.md` (guide samples), `Practice_Test_Questions.md` (origin of the `Practice Test` questions), `mock exam1.pdf` (origin of the `Purcell Practice Set` questions), `Scenarios.md`. The app doesn't use them.
+- `create_repo.md` — steps to publish on GitHub.
 
-## Restricciones (no negociables)
+## Constraints (non-negotiable)
 
-- Un único archivo HTML. Sin frameworks, sin CDN, sin recursos externos, sin fetch de archivos locales. `<meta charset="utf-8">`.
-- Tema claro/oscuro mediante tokens CSS en `:root` (`data-theme` + `prefers-color-scheme`).
-- Accesibilidad: acierto/error con ✓/✕ además del color; todo operable con teclado; foco visible.
-- Todo el contenido de la app en inglés: interfaz, preguntas, opciones y explicaciones. Los comentarios del código y la documentación siguen en español.
+- A single HTML file. No frameworks, no CDN, no external resources, no fetching local files. `<meta charset="utf-8">`.
+- Light/dark theme through CSS tokens on `:root` (`data-theme` + `prefers-color-scheme`).
+- Accessibility: correct/incorrect marked with ✓/✕ as well as color; everything keyboard-operable; visible focus.
+- All app content in English: interface, questions, options and explanations. `CLAUDE.md` and `README.md` are in English; code comments and the local docs (`context/`, `Preliminaries/`) stay in Spanish.
 
-## Datos embebidos
+## Embedded data
 
-`data/questions_heavy.json` se embebe minificado en `<script type="application/json" id="ccarf-data">` dentro de `index.html` (con `file://` no se puede hacer fetch). Tras editar el JSON, correr desde la raíz:
+`data/questions_heavy.json` is embedded, minified, in `<script type="application/json" id="ccarf-data">` inside `index.html` (fetch doesn't work over `file://`). After editing the JSON, run from the project root:
 
 ```
 python3 tools/embed_data.py
 ```
 
-El script valida (IDs únicos por grupo, `d`/`ts`/`sc`/`o`/`a`/`w` bien formados, cupo por dominio para el examen Completo), escapa `</` como `<\/` y reemplaza el bloque. Si hay errores no toca `index.html`. Si encuentra el bloque antiguo `ccarf-data-heavy`, lo elimina. Nunca editar el bloque a mano.
+The script validates (unique IDs per group, well-formed `d`/`ts`/`sc`/`o`/`a`/`w`, enough questions per domain for the Full exam), escapes `</` as `<\/` and replaces the block. If there are errors it leaves `index.html` untouched. If it finds the old `ccarf-data-heavy` block, it removes it. Never edit the block by hand.
 
-Formato:
+Format:
 
 ```
-{ scenarios: [{ n, t, b }],            // número, título, descripción
+{ scenarios: [{ n, t, b }],            // number, title, description
   bank:      [{ id, d, ts, sc, q, o, a, w, src }],
   samples:   [{ id, d, ts, sc, q, o, a, w }] }
 ```
 
-`d` dominio 1–5 · `ts` task statement · `sc` escenario 1–6 · `q` pregunta · `o` 4 opciones en orden original · `a` índice de la correcta (0–3) · `w` explicación única ("Why X": por qué es correcta y, si la fuente lo trae, por qué las otras no) · `src` origen (`Practice Exam` | `Practice Test` | `Purcell Practice Set`; la app aún no lo usa). Los IDs de `bank` y `samples` se numeran por separado y pueden coincidir. El texto admite solo `` `código` `` (se renderiza con `fmt()`, que escapa HTML).
+`d` domain 1–5 · `ts` task statement · `sc` scenario 1–6 · `q` question · `o` 4 options in original order · `a` index of the correct one (0–3) · `w` single explanation ("Why X": why it's correct and, if the source includes it, why the others aren't) · `src` origin (`Practice Exam` | `Practice Test` | `Purcell Practice Set`; the app doesn't use it yet). `bank` and `samples` IDs are numbered separately and may overlap. Text supports only `` `code` `` (rendered by `fmt()`, which escapes HTML).
 
-### Mapeo de escenarios
+### Scenario mapping
 
-En el JSON `sc` es el número oficial. Las fuentes originales usaban nombres cortos; se mapearon así:
+In the JSON, `sc` is the official number. The original sources used short names, mapped as follows:
 
-| `sc` | Escenario oficial | Nombre en el banco (Practice Exam) | Nombre en Practice Test |
+| `sc` | Official scenario | Name in the bank (Practice Exam) | Name in Practice Test |
 |---|---|---|---|
 | 1 | Customer Support Resolution Agent | Customer Support | Customer Support Agent |
 | 2 | Code Generation with Claude Code | Code Generation | Code Generation with Claude Code |
@@ -56,38 +56,38 @@ En el JSON `sc` es el número oficial. Las fuentes originales usaban nombres cor
 | 5 | Claude Code for Continuous Integration | CI | Claude Code for Continuous Integration |
 | 6 | Structured Data Extraction | Structured Data Extraction | — |
 
-Las preguntas de ejemplo de la guía y las del Purcell Practice Set ya usan los nombres y números oficiales.
+The guide's sample questions and the Purcell Practice Set already use the official names and numbers.
 
-## Lógica clave (index.html)
+## Key logic (index.html)
 
-- **Reparto por dominio** (`TEST_MODES[*].dist`, D1..D5): pesos oficiales 27/18/20/20/15 con redondeo por mayor resto. Corto 4/3/3/3/2 · Medio 8/5/6/6/5 · Completo 16/11/12/12/9. Knowledge 15 → 4/3/3/3/2 · 10 → 3/2/2/2/1.
-- **Escenarios** (`buildItems`): se eligen 4 al azar; cada dominio toma primero de esos 4 y completa con los demás si no alcanza. Con el banco actual el examen Completo siempre termina usando los 6 escenarios; es esperado.
-- **Orden**: preguntas agrupadas por escenario, aleatorias dentro del grupo; opciones mezcladas por pregunta (`order[pos] = índice original`). Las respuestas se guardan como índice original.
-- **Explicaciones citan letras originales (A–D)**: por eso la revisión y la pregunta de práctica muestran las opciones en orden original. No mostrar explicaciones junto a opciones mezcladas sin resolver esto.
-- **Puntaje** (modo Test, `scaledScore`):
-  - Se aprueba con ≥ 72% de acierto (`PASS_PCT`).
-  - El puntaje escalado (100–1000) es lineal por tramos para que 72% equivalga exactamente a 720: 0% → 100, 72% → 720, 100% → 1000.
-    - Si acierto < 72%: `100 + (acierto / 72) × 620`.
-    - Si acierto ≥ 72%: `720 + ((acierto − 72) / 28) × 280`.
-    - Se redondea al entero.
-  - El % mostrado usa `Math.floor` para no mostrar "72%" en un no aprobado.
-- **Tiempo**: el reloj usa `endAt` (timestamp), no cuenta ticks. Avisos a 5 min y 1 min; entrega automática en 0. La pregunta de práctica no consume tiempo.
-- **Banco de preguntas**: un solo banco (`DATA.bank`, el pesado), que es lo único que lee `pickByDomain`; la pregunta de práctica usa `DATA.samples`. No hay selector: el de Standard/Heavy se retiró y al cargar se borra su clave antigua de localStorage (`ccarf-bank`).
-- **Estilo del examen** (`state.examStyle`: `real` | `modern`, guardado en localStorage): `showScreen()` pone la clase `exam-real` en `<body>` solo en `test-sample` y `test-exam`; el CSS de `body.exam-real` redefine los tokens (blanco/negro, Arial, sin radios) y esconde topbar, footer, hints y panel de navegación. Los textos de esas pantallas salen del diccionario `UI` vía `tx()`: los dos estilos están en inglés, pero `real` imita la redacción del examen oficial ("End Exam", "Mark for review") y `modern` usa la del simulador ("Finish exam", "⚐ Flag for review"). Los estáticos usan `data-t="<clave>"` + `applyStaticLabels()`. Al añadir texto a la pantalla de examen, agregarlo a los dos estilos en `UI`.
-- **Revisión antes de terminar**: es una vista dentro de `screen-test-exam` (`#exam-review-view`, alterna con `#exam-question-view` vía `showView()`), así comparte barra y reloj. Terminar el examen siempre pasa por ahí (`openReview` → `requestFinish`).
-- **Créditos**: van en el `<footer>` (dos líneas, con enlaces al repo, a Matthew Purcell y a Issues) y en la sección Credits del README, con los conteos por fuente escritos a mano. Si se añade o quita una fuente (`src`) o cambian los conteos, actualizar los dos. El footer se oculta en el estilo "real" del examen.
-- **`[hidden]` lleva `display: none !important`** global: sin eso, reglas como `.btn { display: inline-flex }` lo anulan.
-- **Pantallas**: secciones `.screen` con id `screen-<nombre>`; navegación con `showScreen()` o atributos `data-nav="<nombre>"`. Atajos de teclado centralizados en un único `keydown` por pantalla.
+- **Domain split** (`TEST_MODES[*].dist`, D1..D5): official weights 27/18/20/20/15 with largest-remainder rounding. Short 4/3/3/3/2 · Medium 8/5/6/6/5 · Full 16/11/12/12/9. Knowledge 15 → 4/3/3/3/2 · 10 → 3/2/2/2/1.
+- **Scenarios** (`buildItems`): 4 are picked at random; each domain draws from those 4 first and fills from the others if it runs short. With the current bank, the Full exam always ends up using all 6 scenarios; this is expected.
+- **Order**: questions grouped by scenario, random within each group; options shuffled per question (`order[pos] = original index`). Answers are stored as the original index.
+- **Explanations cite the original letters (A–D)**: that's why the review and the practice question show options in original order. Don't show explanations next to shuffled options without solving this.
+- **Score** (Test mode, `scaledScore`):
+  - Pass with ≥ 72% correct (`PASS_PCT`).
+  - The scaled score (100–1000) is piecewise linear so that 72% maps exactly to 720: 0% → 100, 72% → 720, 100% → 1000.
+    - If accuracy < 72%: `100 + (accuracy / 72) × 620`.
+    - If accuracy ≥ 72%: `720 + ((accuracy − 72) / 28) × 280`.
+    - Rounded to the nearest integer.
+  - The displayed % uses `Math.floor` so a fail never shows "72%".
+- **Time**: the clock uses `endAt` (a timestamp), not tick counting. Warnings at 5 min and 1 min; automatic submission at 0. The practice question doesn't use exam time.
+- **Question bank**: a single bank (`DATA.bank`, the heavy one), the only thing `pickByDomain` reads; the practice question uses `DATA.samples`. There is no selector: the Standard/Heavy one was retired, and its old localStorage key (`ccarf-bank`) is removed on load.
+- **Exam style** (`state.examStyle`: `real` | `modern`, saved in localStorage): `showScreen()` adds the `exam-real` class to `<body>` only on `test-sample` and `test-exam`; the `body.exam-real` CSS redefines the tokens (black/white, Arial, no radii) and hides the topbar, footer, hints and navigation panel. Text on those screens comes from the `UI` dictionary via `tx()`: both styles are in English, but `real` imitates the official exam's wording ("End Exam", "Mark for review") and `modern` uses the simulator's ("Finish exam", "⚐ Flag for review"). Static labels use `data-t="<key>"` + `applyStaticLabels()`. When adding text to the exam screen, add it to both styles in `UI`.
+- **Review before finishing**: a view inside `screen-test-exam` (`#exam-review-view`, toggled with `#exam-question-view` via `showView()`), so it shares the bar and the clock. Finishing the exam always goes through it (`openReview` → `requestFinish`).
+- **Credits**: in the `<footer>` (two lines, with links to the repo, to Matthew Purcell and to Issues) and in the README's Credits section, with per-source counts written by hand. If a source (`src`) is added or removed or the counts change, update both. The footer is hidden in the "real" exam style.
+- **`[hidden]` has a global `display: none !important`**: without it, rules like `.btn { display: inline-flex }` override it.
+- **Screens**: `.screen` sections with id `screen-<name>`; navigation through `showScreen()` or `data-nav="<name>"` attributes. Keyboard shortcuts are centralized in a single `keydown` handler per screen.
 
-## Estado
+## Status
 
-- Hecho: pantalla de inicio, modo Test completo (selección + estilo real/moderno, pregunta de práctica, examen, revisión antes de terminar, resultados por dominio, revisión con filtros) y modo Knowledge (configuración, pregunta con feedback inmediato y reloj de 2 min por pregunta, resumen por dominio).
-- **Knowledge**: siempre estilo moderno (no usa `tx()`; sus textos están directamente en el código); opciones **sin mezclar** (decisión de producto, por las letras de las explicaciones); estado en `state.k`, reloj propio (`startKTimer`/`kTick`) independiente del del examen. Selección con `pickByDomain(kDist(n, dominio))`, sin regla de escenarios, en orden aleatorio. Filtro por dominio en la configuración (radios `k-domain`, generados desde `DOMAINS`): `'all'` usa `KNOWLEDGE_SIZES`; un dominio pone las n preguntas en él (`state.k.domain`) y el resumen muestra solo esa fila.
+- Done: home screen, full Test mode (selection + real/modern style, practice question, exam, review before finishing, results by domain, review with filters) and Knowledge mode (setup, question with immediate feedback and a 2-minute clock per question, summary by domain).
+- **Knowledge**: always modern style (doesn't use `tx()`; its text is directly in the code); options **not shuffled** (product decision, because of the letters in the explanations); state in `state.k`, its own clock (`startKTimer`/`kTick`) independent of the exam's. Selection with `pickByDomain(kDist(n, domain))`, without the scenario rule, in random order. Domain filter in the setup (`k-domain` radios, generated from `DOMAINS`): `'all'` uses `KNOWLEDGE_SIZES`; a single domain puts all n questions in it (`state.k.domain`) and the summary shows only that row.
 
-## Verificación
+## Verification
 
-No hay tests automatizados. Para verificar:
+There are no automated tests. To verify:
 
-- Sintaxis: extraer el `<script>` principal y ejecutar `node --check`.
-- Flujo: copiar `index.html` al scratchpad con un script de prueba inyectado antes de `</body>` que haga clics/eventos de teclado, y correr Chrome headless (`--headless=new --dump-dom` o `--screenshot`). Para vista móvil, cargar la página en un `<iframe>` de 390 px (Chrome headless no reduce la ventana por debajo de ~500 px).
-- No dejar archivos de prueba dentro del proyecto.
+- Syntax: extract the main `<script>` and run `node --check`.
+- Flow: copy `index.html` to the scratchpad with a test script injected before `</body>` that fires clicks/keyboard events, and run headless Chrome (`--headless=new --dump-dom` or `--screenshot`). For the mobile view, load the page in a 390 px `<iframe>` (headless Chrome won't shrink the window below ~500 px).
+- Don't leave test files inside the project.
